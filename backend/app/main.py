@@ -36,6 +36,8 @@ from app.api import (
     search,
     analytics,
 )
+from app.api import notifications
+from app.api import activity
 import cloudinary
 import cloudinary.uploader
 import os
@@ -108,6 +110,9 @@ app.include_router(upload.router, prefix="/api/upload", tags=["File Uploads"])
 app.include_router(search.router, prefix="/api/search", tags=["Search & Filter"])
 
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Data & Analytics"])
+
+app.include_router(notifications.router, prefix="/api")
+app.include_router(activity.router, prefix="/api")
 
 
 @app.get("/")
