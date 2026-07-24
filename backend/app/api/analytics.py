@@ -20,6 +20,20 @@ class TrendData(BaseModel):
     count: int
 
 
+# --- Helpers ---
+
+
+def _extract_terms(text: str) -> list:
+    """Split a comma/semicolon-separated string and return clean Title Case terms."""
+    if not text or not text.strip():
+        return []
+    # Support both comma and semicolon separators
+    for sep in [",", ";"]:
+        if sep in text:
+            return [t.strip().title() for t in text.split(sep) if t.strip()]
+    return [text.strip().title()] if text.strip() else []
+
+
 # --- Endpoints ---
 
 
@@ -27,14 +41,10 @@ class TrendData(BaseModel):
 def get_system_analytics(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)
 ):
-    """
-    Aggregates system-wide academic metrics for the admin dashboard.
-    """
-    # 1. High-level absolute counts
+    """Aggregates system-wide academic metrics for the admin dashboard."""
     total_faculty = db.query(FacultyProfile).count()
     total_pubs = db.query(Publication).count()
 
-    # 2. Group by Department Analytics
     dept_stats_query = (
         db.query(
             FacultyProfile.department,
@@ -46,7 +56,6 @@ def get_system_analytics(
         .all()
     )
 
-    # 3. Format the grouped data
     dept_stats = []
     for dept, f_count, p_count in dept_stats_query:
         dept_name = dept if dept else "Unassigned"
@@ -67,10 +76,7 @@ def get_system_analytics(
 def get_publication_trends(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)
 ):
-    """
-    Analyzes publication output over time.
-    Uses Pandas to intelligently fill in missing years with 0.
-    """
+    """Analyzes publication output over time using Pandas to fill missing years."""
     pubs = (
         db.query(Publication.publication_year)
         .filter(Publication.publication_year.isnot(None))
@@ -100,39 +106,65 @@ def get_top_skills(
     current_user: User = Depends(get_current_active_user),
 ):
     """
-    Extracts, cleans, and ranks the most in-demand skills across the college.
+    Extracts and ranks the most in-demand skills/expertise across all profiles.
+    Reads from skills, areas_of_interest, and specialization fields.
     """
-    # 1. Fetch only the rows where the skills column actually has text
-    profiles = (
-        db.query(FacultyProfile.skills).filter(FacultyProfile.skills.isnot(None)).all()
-    )
+    profiles = db.query(
+        FacultyProfile.skills,
+        FacultyProfile.areas_of_interest,
+        FacultyProfile.specialization,
+    ).all()
 
     if not profiles:
         return []
 
     all_skills = []
 
-    # 2. The Cleaning Loop
-    for (skills_str,) in profiles:
-        # Skip empty strings
-        if not skills_str.strip():
-            continue
+    for skills_str, areas_str, spec_str in profiles:
+        # Skills field — primary source
+        all_skills.extend(_extract_terms(skills_str or ""))
+        # Areas of interest — secondary source (also expertise)
+        all_skills.extend(_extract_terms(areas_str or ""))
+        # Specialization — weighted higher (×2) since it's the core focus
+        for term in _extract_terms(spec_str or ""):
+            all_skills.extend([term, term])
 
-        # Split the string by commas to get individual skills
-        raw_skills = skills_str.split(",")
+    if not all_skills:
+        return []
 
-        for skill in raw_skills:
-            # Strip whitespace and convert to Title Case (e.g., " python " -> "Python")
-            cleaned_skill = skill.strip().title()
-
-            if cleaned_skill:  # Make sure it's not empty after stripping
-                all_skills.append(cleaned_skill)
-
-    # 3. Tally them up using Python's high-performance Counter
     skill_counts = Counter(all_skills)
-
-    # 4. Grab the top N skills (defaults to top 10)
     top_skills = skill_counts.most_common(limit)
-
-    # 5. Format for the FastAPI response
     return [{"skill": name, "count": count} for name, count in top_skills]
+
+
+@router.get("/research-focus", response_model=List[SkillCount])
+def get_research_focus(
+    limit: int = 8,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Aggregates areas_of_interest and specialization across all profiles
+    to power the Research Focus Distribution chart.
+    """
+    profiles = db.query(
+        FacultyProfile.areas_of_interest,
+        FacultyProfile.specialization,
+    ).all()
+
+    if not profiles:
+        return []
+
+    all_terms = []
+    for areas_str, spec_str in profiles:
+        all_terms.extend(_extract_terms(areas_str or ""))
+        # Specialization weighted ×2
+        for t in _extract_terms(spec_str or ""):
+            all_terms.extend([t, t])
+
+    if not all_terms:
+        return []
+
+    counts = Counter(all_terms)
+    top = counts.most_common(limit)
+    return [{"skill": name, "count": count} for name, count in top]
