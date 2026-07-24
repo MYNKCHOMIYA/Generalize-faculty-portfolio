@@ -1,0 +1,472 @@
+import type {
+  Achievement,
+  AuditLog,
+  Certification,
+  Education,
+  Experience,
+  FacultyProfile,
+  NotificationItem,
+  Patent,
+  Project,
+  Publication,
+  PublicationTrendPoint,
+  Role,
+  SkillPoint,
+} from "./types"
+
+export const currentUser: FacultyProfile = {
+  id: "fac-001",
+  name: "Dr. Ananya Sharma",
+  employeeId: "EMP-2019-0472",
+  title: "Associate Professor",
+  department: "Computer Science & Engineering",
+  email: "ananya.sharma@university.edu",
+  phone: "+91 98765 43210",
+  avatar: "/faculty-woman-portrait.png",
+  role: "faculty",
+  officeLocation: "Block C, Room 314",
+  specialization: "Distributed Systems & Machine Learning",
+  areasOfInterest: [
+    "Federated Learning",
+    "Edge Computing",
+    "Consensus Algorithms",
+    "Applied Cryptography",
+    "Graph Neural Networks",
+  ],
+  website: "https://ananyasharma.dev",
+  linkedin: "https://linkedin.com/in/ananya-sharma",
+  googleScholar: "https://scholar.google.com/citations?user=ananya",
+  orcid: "0000-0002-1825-0097",
+  bio: "Researcher and educator focused on building resilient distributed systems and practical machine learning at the edge. Passionate about mentoring the next generation of systems engineers.",
+  joinedYear: 2019,
+}
+
+export const departmentFaculty: FacultyProfile[] = [
+  currentUser,
+  {
+    id: "fac-002",
+    name: "Dr. Rajesh Menon",
+    employeeId: "EMP-2011-0188",
+    title: "Professor & Head",
+    department: "Computer Science & Engineering",
+    email: "rajesh.menon@university.edu",
+    phone: "+91 98765 11223",
+    avatar: "/professor-man-portrait.png",
+    role: "hod",
+    officeLocation: "Block C, Room 301",
+    specialization: "Computer Networks & Security",
+    areasOfInterest: ["Network Security", "IoT", "5G Systems"],
+    website: "https://rajeshmenon.edu",
+    linkedin: "https://linkedin.com/in/rajesh-menon",
+    googleScholar: "https://scholar.google.com/citations?user=rajesh",
+    orcid: "0000-0001-5109-3700",
+    bio: "Leading the department with a focus on secure, scalable networks.",
+    joinedYear: 2011,
+  },
+  {
+    id: "fac-003",
+    name: "Dr. Priya Nair",
+    employeeId: "EMP-2016-0339",
+    title: "Assistant Professor",
+    department: "Computer Science & Engineering",
+    email: "priya.nair@university.edu",
+    phone: "+91 98765 33445",
+    avatar: "/young-professor-woman.jpg",
+    role: "faculty",
+    officeLocation: "Block C, Room 320",
+    specialization: "Human-Computer Interaction",
+    areasOfInterest: ["Accessibility", "UX Research", "AR/VR"],
+    website: "https://priyanair.io",
+    linkedin: "https://linkedin.com/in/priya-nair",
+    googleScholar: "https://scholar.google.com/citations?user=priya",
+    orcid: "0000-0003-4832-1122",
+    bio: "Designing inclusive interactive systems.",
+    joinedYear: 2016,
+  },
+  {
+    id: "fac-004",
+    name: "Dr. Vikram Iyer",
+    employeeId: "EMP-2014-0255",
+    title: "Associate Professor",
+    department: "Computer Science & Engineering",
+    email: "vikram.iyer@university.edu",
+    phone: "+91 98765 55667",
+    avatar: "/male-professor-glasses.jpg",
+    role: "faculty",
+    officeLocation: "Block C, Room 318",
+    specialization: "Databases & Data Engineering",
+    areasOfInterest: ["Query Optimization", "Stream Processing", "Data Lakes"],
+    website: "https://vikramiyer.dev",
+    linkedin: "https://linkedin.com/in/vikram-iyer",
+    googleScholar: "https://scholar.google.com/citations?user=vikram",
+    orcid: "0000-0002-9981-4410",
+    bio: "Building the data infrastructure of tomorrow.",
+    joinedYear: 2014,
+  },
+  {
+    id: "fac-005",
+    name: "Prof. Meera Krishnan",
+    employeeId: "EMP-2009-0102",
+    title: "Professor",
+    department: "Computer Science & Engineering",
+    email: "meera.krishnan@university.edu",
+    phone: "+91 98765 77889",
+    avatar: "/senior-professor-woman.jpg",
+    role: "faculty",
+    officeLocation: "Block C, Room 305",
+    specialization: "Theoretical Computer Science",
+    areasOfInterest: ["Complexity Theory", "Algorithms", "Formal Methods"],
+    website: "https://meerakrishnan.edu",
+    linkedin: "https://linkedin.com/in/meera-krishnan",
+    googleScholar: "https://scholar.google.com/citations?user=meera",
+    orcid: "0000-0001-2233-4455",
+    bio: "Exploring the limits of computation.",
+    joinedYear: 2009,
+  },
+]
+
+export const adminUser: FacultyProfile = {
+  ...currentUser,
+  id: "adm-001",
+  name: "System Administrator",
+  employeeId: "EMP-ADMIN-0001",
+  title: "Portfolio System Administrator",
+  role: "admin",
+  specialization: "Institutional Systems Management",
+  avatar: "/admin-avatar.png",
+}
+
+export function userForRole(role: Role): FacultyProfile {
+  if (role === "admin") return adminUser
+  if (role === "hod") return departmentFaculty[1]
+  return currentUser
+}
+
+export const publications: Publication[] = [
+  {
+    id: "pub-001",
+    title: "Fault-Tolerant Consensus for Geo-Distributed Edge Networks",
+    authors: "A. Sharma, R. Menon, K. Gupta",
+    journal: "IEEE Transactions on Parallel and Distributed Systems",
+    issn: "1045-9219",
+    indexedIn: ["SCIE", "Scopus"],
+    year: 2024,
+    citations: 42,
+    pdfUrl: "#",
+  },
+  {
+    id: "pub-002",
+    title: "Privacy-Preserving Federated Learning at the Network Edge",
+    authors: "A. Sharma, P. Nair",
+    journal: "ACM Computing Surveys",
+    issn: "0360-0300",
+    indexedIn: ["SCIE", "Scopus", "Web of Science"],
+    year: 2023,
+    citations: 118,
+    pdfUrl: "#",
+  },
+  {
+    id: "pub-003",
+    title: "Adaptive Gossip Protocols for Dynamic Peer Networks",
+    authors: "A. Sharma, V. Iyer, S. Rao",
+    journal: "Journal of Systems and Software",
+    issn: "0164-1212",
+    indexedIn: ["Scopus"],
+    year: 2023,
+    citations: 27,
+    pdfUrl: "#",
+  },
+  {
+    id: "pub-004",
+    title: "Graph Neural Networks for Anomaly Detection in Sensor Meshes",
+    authors: "A. Sharma, M. Krishnan",
+    journal: "Neural Computing and Applications",
+    issn: "0941-0643",
+    indexedIn: ["SCIE", "Scopus"],
+    year: 2022,
+    citations: 64,
+    pdfUrl: "#",
+  },
+  {
+    id: "pub-005",
+    title: "Lightweight Cryptographic Primitives for Constrained Devices",
+    authors: "A. Sharma, R. Menon",
+    journal: "International Journal of Information Security",
+    issn: "1615-5262",
+    indexedIn: ["SCIE", "Scopus"],
+    year: 2021,
+    citations: 89,
+    pdfUrl: "#",
+  },
+]
+
+export const projects: Project[] = [
+  {
+    id: "prj-001",
+    title: "Resilient Edge Intelligence for Smart Campuses",
+    fundingAgency: "Department of Science & Technology (DST)",
+    amount: 8500000,
+    status: "ongoing",
+    teamMembers: ["Dr. Ananya Sharma", "Dr. Priya Nair", "2 Research Scholars"],
+    startYear: 2023,
+    endYear: null,
+    documentsUrl: "#",
+  },
+  {
+    id: "prj-002",
+    title: "Secure Federated Analytics for Healthcare IoT",
+    fundingAgency: "SERB Core Research Grant",
+    amount: 4200000,
+    status: "ongoing",
+    teamMembers: ["Dr. Ananya Sharma", "Dr. Vikram Iyer"],
+    startYear: 2024,
+    endYear: null,
+    documentsUrl: "#",
+  },
+  {
+    id: "prj-003",
+    title: "Distributed Ledger for Academic Credentialing",
+    fundingAgency: "Ministry of Education",
+    amount: 6100000,
+    status: "completed",
+    teamMembers: ["Dr. Ananya Sharma", "Dr. Rajesh Menon", "3 Research Scholars"],
+    startYear: 2020,
+    endYear: 2023,
+    documentsUrl: "#",
+  },
+  {
+    id: "prj-004",
+    title: "Energy-Aware Scheduling for Edge Clusters",
+    fundingAgency: "AICTE",
+    amount: 1800000,
+    status: "sanctioned",
+    teamMembers: ["Dr. Ananya Sharma"],
+    startYear: 2025,
+    endYear: null,
+    documentsUrl: "#",
+  },
+]
+
+export const experiences: Experience[] = [
+  {
+    id: "exp-001",
+    organization: "University Institute of Technology",
+    role: "Associate Professor",
+    employmentType: "Full-time",
+    startYear: 2019,
+    endYear: null,
+    location: "Bengaluru, India",
+  },
+  {
+    id: "exp-002",
+    organization: "TechCorp Research Labs",
+    role: "Senior Research Scientist",
+    employmentType: "Full-time",
+    startYear: 2015,
+    endYear: 2019,
+    location: "Hyderabad, India",
+  },
+  {
+    id: "exp-003",
+    organization: "Global Systems Institute",
+    role: "Visiting Researcher",
+    employmentType: "Visiting",
+    startYear: 2018,
+    endYear: 2018,
+    location: "Zurich, Switzerland",
+  },
+]
+
+export const education: Education[] = [
+  {
+    id: "edu-001",
+    degree: "Ph.D.",
+    institution: "Indian Institute of Science",
+    field: "Computer Science (Distributed Systems)",
+    year: 2015,
+  },
+  {
+    id: "edu-002",
+    degree: "M.Tech",
+    institution: "IIT Bombay",
+    field: "Computer Science & Engineering",
+    year: 2010,
+  },
+  {
+    id: "edu-003",
+    degree: "B.E.",
+    institution: "College of Engineering, Pune",
+    field: "Information Technology",
+    year: 2008,
+  },
+]
+
+export const achievements: Achievement[] = [
+  {
+    id: "ach-001",
+    title: "Best Paper Award",
+    issuer: "IEEE INFOCOM 2024",
+    year: 2024,
+    description: "Recognized for outstanding contribution to edge consensus research.",
+  },
+  {
+    id: "ach-002",
+    title: "Young Faculty Research Excellence",
+    issuer: "University Board",
+    year: 2022,
+    description: "Awarded for sustained research output and mentorship.",
+  },
+  {
+    id: "ach-003",
+    title: "Outstanding Reviewer",
+    issuer: "ACM Computing Surveys",
+    year: 2023,
+    description: "Acknowledged for high-quality peer review contributions.",
+  },
+]
+
+export const patents: Patent[] = [
+  {
+    id: "pat-001",
+    title: "Method for Adaptive Consensus in Partitioned Networks",
+    patentNumber: "IN 456789",
+    status: "granted",
+    year: 2023,
+    inventors: "A. Sharma, R. Menon",
+  },
+  {
+    id: "pat-002",
+    title: "System for Privacy-Preserving Model Aggregation",
+    patentNumber: "IN 501234",
+    status: "filed",
+    year: 2024,
+    inventors: "A. Sharma, P. Nair",
+  },
+]
+
+export const certifications: Certification[] = [
+  {
+    id: "cert-001",
+    name: "Certified Kubernetes Administrator",
+    issuer: "Cloud Native Computing Foundation",
+    year: 2022,
+    credentialId: "CKA-2022-88231",
+  },
+  {
+    id: "cert-002",
+    name: "Deep Learning Specialization",
+    issuer: "DeepLearning.AI",
+    year: 2021,
+    credentialId: "DLS-2021-44120",
+  },
+]
+
+export const auditLogs: AuditLog[] = [
+  {
+    id: "log-001",
+    actor: "Dr. Ananya Sharma",
+    action: "updated publication record",
+    target: "Fault-Tolerant Consensus...",
+    category: "publication",
+    timestamp: "2 minutes ago",
+  },
+  {
+    id: "log-002",
+    actor: "System Administrator",
+    action: "modified role permissions for",
+    target: "Dr. Priya Nair",
+    category: "security",
+    timestamp: "18 minutes ago",
+  },
+  {
+    id: "log-003",
+    actor: "Dr. Rajesh Menon",
+    action: "approved project sanction for",
+    target: "Energy-Aware Scheduling...",
+    category: "project",
+    timestamp: "1 hour ago",
+  },
+  {
+    id: "log-004",
+    actor: "Dr. Vikram Iyer",
+    action: "logged in from new device",
+    target: "IP 10.24.11.87",
+    category: "security",
+    timestamp: "3 hours ago",
+  },
+  {
+    id: "log-005",
+    actor: "Dr. Ananya Sharma",
+    action: "uploaded profile document",
+    target: "ORCID verification",
+    category: "profile",
+    timestamp: "5 hours ago",
+  },
+  {
+    id: "log-006",
+    actor: "System",
+    action: "completed nightly backup of",
+    target: "portfolio database",
+    category: "system",
+    timestamp: "Yesterday, 02:00",
+  },
+]
+
+export const notifications: NotificationItem[] = [
+  {
+    id: "ntf-001",
+    title: "New citation milestone",
+    description: "Your federated learning survey crossed 100 citations.",
+    time: "10m ago",
+    read: false,
+    type: "success",
+  },
+  {
+    id: "ntf-002",
+    title: "Project report due",
+    description: "DST progress report for Smart Campuses is due in 5 days.",
+    time: "2h ago",
+    read: false,
+    type: "warning",
+  },
+  {
+    id: "ntf-003",
+    title: "Role permission updated",
+    description: "Admin updated your department access level.",
+    time: "1d ago",
+    read: false,
+    type: "info",
+  },
+  {
+    id: "ntf-004",
+    title: "Publication verified",
+    description: "Your IEEE TPDS paper was indexed in SCIE.",
+    time: "3d ago",
+    read: true,
+    type: "success",
+  },
+]
+
+export const publicationTrend: PublicationTrendPoint[] = [
+  { year: "2019", publications: 3, citations: 40 },
+  { year: "2020", publications: 5, citations: 95 },
+  { year: "2021", publications: 6, citations: 180 },
+  { year: "2022", publications: 8, citations: 265 },
+  { year: "2023", publications: 11, citations: 390 },
+  { year: "2024", publications: 9, citations: 470 },
+]
+
+export const topSkills: SkillPoint[] = [
+  { skill: "Distributed Systems", count: 24 },
+  { skill: "Machine Learning", count: 19 },
+  { skill: "Cryptography", count: 14 },
+  { skill: "Edge Computing", count: 12 },
+  { skill: "Graph Networks", count: 9 },
+  { skill: "Formal Methods", count: 6 },
+]
+
+export function formatCurrency(amount: number): string {
+  if (amount >= 10000000) return `₹${(amount / 10000000).toFixed(2)} Cr`
+  if (amount >= 100000) return `₹${(amount / 100000).toFixed(1)} L`
+  return `₹${amount.toLocaleString("en-IN")}`
+}
