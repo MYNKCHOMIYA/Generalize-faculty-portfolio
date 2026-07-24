@@ -59,6 +59,36 @@ def read_my_publications(
     return publications
 
 
+@router.put("/{id}", response_model=PublicationResponse)
+def update_publication(
+    *,
+    session: SessionDep,
+    id: str,
+    pub_in: PublicationCreate,
+    current_user: User = Depends(get_current_active_user)
+) -> Any:
+    """Update a specific publication."""
+    profile = get_current_faculty_profile(session, current_user.id)
+
+    publication = (
+        session.query(Publication)
+        .filter(Publication.id == id, Publication.faculty_id == profile.id)
+        .first()
+    )
+
+    if not publication:
+        raise HTTPException(status_code=404, detail="Publication not found")
+
+    update_data = pub_in.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(publication, field, value)
+
+    session.add(publication)
+    session.commit()
+    session.refresh(publication)
+    return publication
+
+
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT, response_class=Response)
 def delete_publication(
     *,

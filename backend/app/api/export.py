@@ -60,8 +60,9 @@ def download_faculty_cv(
     pdf_bytes = generate_pdf_cv(profile, education, experience, publications, projects)
 
     # 4. Return as a downloadable file stream
+    # NOTE: fpdf2's pdf.output() returns a bytearray; Starlette expects bytes.
     return Response(
-        content=pdf_bytes,
+        content=bytes(pdf_bytes),
         media_type="application/pdf",
         headers={
             "Content-Disposition": f'attachment; filename="{profile.first_name}_{profile.last_name}_CV.pdf"'

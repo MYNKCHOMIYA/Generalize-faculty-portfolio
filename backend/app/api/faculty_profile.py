@@ -12,6 +12,7 @@ from app.schemas.faculty_profile import (
 )
 from fastapi import UploadFile, File
 from app.utils.cloudinary_handler import upload_image
+from app.utils.activity import log_system_activity
 
 router = APIRouter()
 
@@ -44,6 +45,10 @@ def create_profile(
     session.add(db_profile)
     session.commit()
     session.refresh(db_profile)
+    # --- NEW: Log the action securely ---
+    log_system_activity(
+        session, current_user.id, "Created Faculty Profile", "FacultyProfile"
+    )
     return db_profile
 
 
@@ -91,6 +96,12 @@ def update_profile_me(
     session.add(profile)
     session.commit()
     session.refresh(profile)
+
+    # --- NEW: Log the action securely ---
+    log_system_activity(
+        session, current_user.id, "Updated Faculty Profile", "FacultyProfile"
+    )
+
     return profile
 
 
