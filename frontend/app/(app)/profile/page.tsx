@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import {
   User, Mail, Phone, Building2, MapPin, Globe,
   Loader2, AlertCircle, UploadCloud, FileDown,
-  X
+  X, Share2, Link2
 } from "lucide-react"
 import { toast } from "sonner"
 import { useRef, useState } from "react"
@@ -16,10 +16,11 @@ import { PageTransition } from "@/components/motion"
 import { ProfileSheet } from "@/components/dashboard/profile-sheet"
 import { ImageCropperModal } from "@/components/image-cropper"
 import { AnimatePresence, motion } from "framer-motion"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import api from "@/lib/api"
 
-// Custom standard SVGs for academic/professional platforms
-const LinkedinIcon = (props: React.SVGProps<SVGSVGElement>) => (
+// Brand icons
+const LinkedinBrandIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" {...props}>
     <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
   </svg>
@@ -54,6 +55,64 @@ function ProfileField({ icon: Icon, label, value, href }: { icon: any; label: st
         )}
       </div>
     </div>
+  )
+}
+
+function SocialLinks({ profile }: { profile: any }) {
+  const links = [
+    profile.linkedin && {
+      label: "LinkedIn",
+      href: profile.linkedin.startsWith("http") ? profile.linkedin : `https://${profile.linkedin}`,
+      icon: LinkedinBrandIcon,
+      color: "text-[#0A66C2] dark:text-[#4B9FE5]",
+      bg: "bg-[#0A66C2]/10 hover:bg-[#0A66C2]/20 border-[#0A66C2]/30",
+    },
+    profile.website && {
+      label: "Website",
+      href: profile.website.startsWith("http") ? profile.website : `https://${profile.website}`,
+      icon: Globe,
+      color: "text-teal-600 dark:text-teal-400",
+      bg: "bg-teal-500/10 hover:bg-teal-500/20 border-teal-500/30",
+    },
+    profile.google_scholar && {
+      label: "Google Scholar",
+      href: profile.google_scholar.startsWith("http") ? profile.google_scholar : `https://${profile.google_scholar}`,
+      icon: ScholarIcon,
+      color: "text-[#4285F4] dark:text-[#7BAAF7]",
+      bg: "bg-[#4285F4]/10 hover:bg-[#4285F4]/20 border-[#4285F4]/30",
+    },
+    profile.orcid && {
+      label: "ORCID",
+      href: `https://orcid.org/${profile.orcid}`,
+      icon: OrcidIcon,
+      color: "text-[#658000] dark:text-[#A6CE39]",
+      bg: "bg-[#A6CE39]/10 hover:bg-[#A6CE39]/20 border-[#A6CE39]/30",
+    },
+  ].filter(Boolean) as any[]
+
+  if (links.length === 0) return null
+
+  return (
+    <TooltipProvider>
+      <div className="flex flex-wrap gap-2">
+        {links.map((l) => (
+          <Tooltip key={l.label}>
+            <TooltipTrigger>
+              <a
+                href={l.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`flex items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-medium transition-all duration-200 hover:scale-[1.04] active:scale-95 ${l.color} ${l.bg}`}
+              >
+                <l.icon className="size-4 shrink-0" />
+                <span className="hidden sm:inline">{l.label}</span>
+              </a>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">{l.label}</TooltipContent>
+          </Tooltip>
+        ))}
+      </div>
+    </TooltipProvider>
   )
 }
 
@@ -256,6 +315,18 @@ export default function ProfilePage() {
               <FileDown className="size-4 mr-2" />
               Download CV
             </Button>
+            <Button
+              variant="outline"
+              className="rounded-full shadow-sm"
+              onClick={() => {
+                const url = `${window.location.origin}/portfolio/${profile.id}`
+                navigator.clipboard.writeText(url)
+                toast.success("Portfolio link copied!", { description: url })
+              }}
+            >
+              <Share2 className="size-4 mr-2" />
+              Share
+            </Button>
             <ProfileSheet />
           </div>
         </CardContent>
@@ -277,14 +348,12 @@ export default function ProfilePage() {
           </Card>
 
           <Card className="rounded-2xl border-border/70 shadow-sm">
-            <CardContent className="p-5 space-y-4">
+            <CardContent className="p-5 space-y-3">
               <h3 className="font-semibold text-sm">Online Presence</h3>
-              <div className="space-y-4">
-                <ProfileField icon={Globe} label="Website" value={profile.website} href={profile.website} />
-                <ProfileField icon={LinkedinIcon} label="LinkedIn" value={profile.linkedin ? "View Profile" : null} href={profile.linkedin} />
-                <ProfileField icon={ScholarIcon} label="Google Scholar" value={profile.google_scholar ? "View Publications" : null} href={profile.google_scholar} />
-                <ProfileField icon={OrcidIcon} label="ORCID" value={profile.orcid} href={profile.orcid ? `https://orcid.org/${profile.orcid}` : undefined} />
-              </div>
+              <SocialLinks profile={profile} />
+              {!profile.linkedin && !profile.website && !profile.google_scholar && !profile.orcid && (
+                <p className="text-xs text-muted-foreground">No social links added yet.</p>
+              )}
             </CardContent>
           </Card>
         </div>
