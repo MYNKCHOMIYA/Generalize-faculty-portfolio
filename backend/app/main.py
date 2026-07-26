@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 
 # This single line forces SQLAlchemy to load all models from __init__.py at startup
 import app.models
@@ -13,19 +14,6 @@ from app.api.experience import router as experience_router
 from app.api.project import router as project_router
 from app.api.achievement import router as achievement_router
 from app.api.export import router as export_router
-from app.api import patent, certification
-from app.api import patent, certification, teaching, student_guidance
-from app.api import patent, certification, teaching, student_guidance, workshop
-from app.api import upload
-from app.api import (
-    patent,
-    certification,
-    teaching,
-    student_guidance,
-    workshop,
-    upload,
-    search,
-)
 from app.api import (
     patent,
     certification,
@@ -38,6 +26,7 @@ from app.api import (
 )
 from app.api import notifications
 from app.api import activity
+from app.api import public_portfolio
 import cloudinary
 import cloudinary.uploader
 import os
@@ -56,8 +45,9 @@ app = FastAPI(
     title=settings.PROJECT_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
 
+# ── Middleware ─────────────────────────────────────────────────────────────────
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-# Configure CORS for the frontend React application
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://localhost:5173"],
@@ -66,7 +56,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include Authentication Routers
+# ── Routers ────────────────────────────────────────────────────────────────────
 app.include_router(
     auth_router, prefix=f"{settings.API_V1_STR}/auth", tags=["Authentication"]
 )
@@ -95,6 +85,14 @@ app.include_router(
 app.include_router(
     export_router, prefix=f"{settings.API_V1_STR}/export", tags=["Data Export"]
 )
+
+# Public portfolio — no auth required
+app.include_router(
+    public_portfolio.router,
+    prefix=f"{settings.API_V1_STR}/portfolio/public",
+    tags=["Public Portfolio"],
+)
+
 app.include_router(patent.router, prefix="/api/patents", tags=["Patents"])
 app.include_router(
     certification.router, prefix="/api/certifications", tags=["Certifications"]
@@ -104,13 +102,9 @@ app.include_router(
     student_guidance.router, prefix="/api/student-guidance", tags=["Student Guidance"]
 )
 app.include_router(workshop.router, prefix="/api/workshops", tags=["Workshops & FDP"])
-
 app.include_router(upload.router, prefix="/api/upload", tags=["File Uploads"])
-
 app.include_router(search.router, prefix="/api/search", tags=["Search & Filter"])
-
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Data & Analytics"])
-
 app.include_router(notifications.router, prefix="/api")
 app.include_router(activity.router, prefix="/api")
 
