@@ -39,10 +39,6 @@ export default function PortfolioPage() {
     </div>
   )
 
-  const handleDownloadCV = () => {
-    window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/export/cv/${profile.id}`, '_blank')
-  }
-
   return (
     <PageTransition className="max-w-4xl mx-auto space-y-8 pb-12">
       {/* Header Section */}
@@ -60,9 +56,6 @@ export default function PortfolioPage() {
             {profile.department && <p className="text-muted-foreground text-sm">{profile.department}</p>}
           </div>
         </div>
-        <Button onClick={handleDownloadCV} className="shrink-0" size="lg">
-          <FileText className="mr-2 size-4" /> Download Full CV
-        </Button>
       </div>
 
       <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mt-2">
@@ -176,6 +169,7 @@ export default function PortfolioPage() {
           </div>
         </section>
       )}
+
     </PageTransition>
   )
 }

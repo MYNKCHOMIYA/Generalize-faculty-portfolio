@@ -73,7 +73,7 @@ export function CrudModule<T extends Record<string, any>>({
   })
 
   const form = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema as any),
   })
 
   const saveMutation = useMutation({

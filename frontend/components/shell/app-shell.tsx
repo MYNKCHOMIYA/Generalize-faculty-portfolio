@@ -8,9 +8,12 @@ import { ThemeToggle } from "./theme-toggle"
 import { RoleSwitcher } from "./role-switcher"
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Input } from "@/components/ui/input"
+import { useRole } from "@/components/role-provider"
+
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { profile } = useRole()
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -44,6 +47,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="ml-auto flex items-center gap-1.5">
+
             <RoleSwitcher />
             <ThemeToggle />
             <NotificationBell />

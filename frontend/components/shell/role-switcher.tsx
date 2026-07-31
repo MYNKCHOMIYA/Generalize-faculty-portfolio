@@ -28,7 +28,7 @@ export function RoleSwitcher() {
         className="inline-flex h-9 items-center gap-2 rounded-full border border-border/70 bg-secondary/60 px-3 text-xs font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
       >
         <span className="size-1.5 rounded-full bg-success" />
-        <span className="hidden sm:inline">{roleLabels[role]}</span>
+        <span className="hidden sm:inline">{role ? roleLabels[role] : "Select Role"}</span>
         <ChevronDown className="size-3.5 opacity-60" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64 rounded-xl">

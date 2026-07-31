@@ -146,7 +146,7 @@ export function ImageCropperModal({ imageSrc, onCropComplete, onCancel, isLoadin
             min={1}
             max={3}
             step={0.05}
-            onValueChange={(val) => setZoom(val[0])}
+            onValueChange={(val: any) => setZoom(Array.isArray(val) ? val[0] : val)}
             className="flex-1"
           />
         </div>

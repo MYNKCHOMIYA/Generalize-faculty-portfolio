@@ -13,7 +13,7 @@ from app.api.education import router as education_router
 from app.api.experience import router as experience_router
 from app.api.project import router as project_router
 from app.api.achievement import router as achievement_router
-from app.api.export import router as export_router
+
 from app.api import (
     patent,
     certification,
@@ -85,9 +85,6 @@ app.include_router(
     achievement_router,
     prefix=f"{settings.API_V1_STR}/achievements",
     tags=["Achievements"],
-)
-app.include_router(
-    export_router, prefix=f"{settings.API_V1_STR}/export", tags=["Data Export"]
 )
 
 # Public portfolio — no auth required
