@@ -31,7 +31,7 @@ export const navItems: NavItem[] = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard, roles: ["admin", "hod", "faculty"], group: "Overview" },
   { label: "My Profile", href: "/profile", icon: UserRound, roles: ["admin", "hod", "faculty"], group: "Overview" },
   { label: "My Portfolio", href: "/portfolio", icon: Globe2, roles: ["admin", "hod", "faculty"], group: "Overview" },
-  { label: "Search Faculty", href: "/search", icon: Search, roles: ["admin", "hod", "faculty"], group: "Overview" },
+  { label: "Search Faculty", href: "/search", icon: Search, roles: ["admin", "hod"], group: "Overview" },
   { label: "Publications", href: "/publications", icon: BookOpen, roles: ["admin", "hod", "faculty"], group: "Portfolio" },
   { label: "Projects", href: "/projects", icon: FlaskConical, roles: ["admin", "hod", "faculty"], group: "Portfolio" },
   { label: "Education", href: "/education", icon: GraduationCap, roles: ["admin", "hod", "faculty"], group: "Portfolio" },

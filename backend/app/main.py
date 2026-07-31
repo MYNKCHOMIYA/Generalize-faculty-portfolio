@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
 # This single line forces SQLAlchemy to load all models from __init__.py at startup
-import app.models
+import app.models as _models  # noqa: F401
 
 from app.api.auth import router as auth_router
 from app.core.config import settings

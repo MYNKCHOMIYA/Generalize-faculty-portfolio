@@ -49,7 +49,6 @@ def get_current_active_user(
     return current_user
 
 
-# Optional: Role-based access control (RBAC) dependency
 def get_current_admin(
     current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> User:
@@ -58,5 +57,29 @@ def get_current_admin(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="The user doesn't have enough privileges",
+        )
+    return current_user
+
+
+def get_current_hod(
+    current_user: Annotated[User, Depends(get_current_active_user)],
+) -> User:
+    """Ensures the user has HOD privileges."""
+    if current_user.role != "hod":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only a Head of Department can access this resource",
+        )
+    return current_user
+
+
+def get_current_admin_or_hod(
+    current_user: Annotated[User, Depends(get_current_active_user)],
+) -> User:
+    """Ensures the user has admin or HOD privileges."""
+    if current_user.role not in ("admin", "hod"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Insufficient privileges. Admin or HOD role required.",
         )
     return current_user

@@ -1,12 +1,11 @@
 "use client"
 
-import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { useMutation } from "@tanstack/react-query"
-import { Sparkles, Loader2, ArrowRight } from "lucide-react"
+import { Sparkles, Loader2, ArrowRight, GraduationCap } from "lucide-react"
 import { toast } from "sonner"
 import { motion } from "framer-motion"
 
@@ -21,19 +20,15 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import api from "@/lib/api"
 
+// Role is NOT part of the registration form — always defaults to "faculty" on backend
 const registerSchema = z.object({
-  email: z.string().email("Invalid email address").endsWith("@skit.ac.in", "Only @skit.ac.in emails are allowed"),
+  email: z
+    .string()
+    .email("Invalid email address")
+    .endsWith("@skit.ac.in", "Only @skit.ac.in emails are allowed"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  role: z.enum(["faculty", "hod", "admin"]),
 })
 
 type RegisterFormValues = z.infer<typeof registerSchema>
@@ -43,15 +38,12 @@ export default function RegisterPage() {
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      role: "faculty",
-    },
+    defaultValues: { email: "", password: "" },
   })
 
   const registerMutation = useMutation({
     mutationFn: async (values: RegisterFormValues) => {
+      // Never send role — backend always assigns "faculty"
       const response = await api.post("/api/v1/auth/register", values)
       return response.data
     },
@@ -87,10 +79,20 @@ export default function RegisterPage() {
             </div>
             <CardTitle className="text-2xl tracking-tight">Create Account</CardTitle>
             <CardDescription className="text-balance">
-              Register for your Faculty Portfolio access. Must use an @skit.ac.in email.
+              Register for your Faculty Portfolio. Must use an @skit.ac.in email.
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Faculty role info banner */}
+            <div className="mb-5 flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
+              <GraduationCap className="size-4 shrink-0 text-primary" />
+              <p className="text-xs text-muted-foreground">
+                All new accounts are registered as{" "}
+                <span className="font-semibold text-primary">Faculty</span>. Contact
+                your administrator to be assigned an elevated role.
+              </p>
+            </div>
+
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
@@ -121,21 +123,6 @@ export default function RegisterPage() {
                   </p>
                 )}
               </div>
-              <div className="space-y-2">
-                <Label>Role</Label>
-                <Select 
-                  onValueChange={(val) => form.setValue("role", val as any)} 
-                  defaultValue={form.getValues("role")}
-                >
-                  <SelectTrigger className="bg-background/50">
-                    <SelectValue placeholder="Select your role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="faculty">Faculty Member</SelectItem>
-                    <SelectItem value="hod">Head of Department (HOD)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
               <Button
                 type="submit"
                 className="mt-6 w-full group"
@@ -145,7 +132,7 @@ export default function RegisterPage() {
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <>
-                    Register
+                    Create Account
                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </>
                 )}
@@ -155,7 +142,11 @@ export default function RegisterPage() {
           <CardFooter className="flex justify-center border-t border-border/50 p-4">
             <p className="text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Button variant="link" className="h-auto p-0 font-medium" onClick={() => router.push("/login")}>
+              <Button
+                variant="link"
+                className="h-auto p-0 font-medium"
+                onClick={() => router.push("/login")}
+              >
                 Sign In
               </Button>
             </p>

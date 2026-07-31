@@ -23,11 +23,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
 
-  // undefined = not yet checked (SSR / first paint)
-  // null      = checked, no token found
-  // string    = valid token present
   const [token, setToken] = useState<string | null | undefined>(undefined)
-  const [roleOverride, setRoleOverride] = useState<Role | null>(null)
 
   // Read token from localStorage on mount and when pathname changes
   useEffect(() => {
@@ -92,16 +88,16 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     localStorage.removeItem("token")
     setToken(null)
-    setRoleOverride(null)
     router.push("/login")
   }
 
   const jwtRole = user?.role as Role | undefined
-  const role: Role | null = roleOverride ?? jwtRole ?? null
+  const role: Role | null = jwtRole ?? null
   // isLoading is true while we haven't read localStorage yet OR while queries run
   const isLoading = token === undefined || userLoading || (typeof token === "string" && profileLoading)
 
-  const setRole = (r: Role) => setRoleOverride(r)
+  // setRole is kept for interface compatibility but is a no-op now — role comes from the JWT
+  const setRole = (_r: Role) => {}
 
   // While we haven't determined auth state yet, show a full-screen spinner
   // so children never render with stale/empty context
