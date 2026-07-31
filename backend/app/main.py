@@ -90,11 +90,117 @@ app.include_router(
 
 # Public portfolio — no auth required
 app.include_router(
+    public_portfolio.router,    allow_methods=["*"],
+60
+    allow_headers=["*"],
+61
+)
+62
+​
+63
+# ── Routers ────────────────────────────────────────────────────────────────────
+64
+app.include_router(
+65
+    auth_router, prefix=f"{settings.API_V1_STR}/auth", tags=["Authentication"]
+66
+)
+67
+app.include_router(
+68
+    profile_router, prefix=f"{settings.API_V1_STR}/profile", tags=["Faculty Profile"]
+69
+)
+70
+app.include_router(
+71
+    publication_router,
+72
+    prefix=f"{settings.API_V1_STR}/publications",
+73
+    tags=["Publications"],
+74
+)
+75
+app.include_router(
+76
+    education_router, prefix=f"{settings.API_V1_STR}/education", tags=["Education"]
+77
+)
+78
+app.include_router(
+79
+    experience_router, prefix=f"{settings.API_V1_STR}/experience", tags=["Experience"]
+80
+)
+81
+app.include_router(
+82
+    project_router, prefix=f"{settings.API_V1_STR}/projects", tags=["Projects"]
+83
+)
+84
+app.include_router(
+85
+    achievement_router,
+86
+    prefix=f"{settings.API_V1_STR}/achievements",
+87
+    tags=["Achievements"],
+88
+)
+89
+​
+90
+​
+91
+# Public portfolio — no auth required
+92
+app.include_router(
+93
     public_portfolio.router,
+94
+    prefix=f"{settings.API_V1_STR}/portfolio/public",
+95
+    tags=["Public Portfolio"],
+96
+)
+ |  | 
+97
+ 
+100
+ 
+101
+​
+102
+app.include_router(patent.router, prefix="/api/patents", tags=["Patents"])
+103
+app.include_router(
+104
+    certification.router, prefix="/api/certifications", tags=["Certifications"]
+105
+)
+106
+app.include_router(teaching.router, prefix="/api/teaching", tags=["Teaching"])
+107
+app.include_router(
+108
+    student_guidance.router, prefix="/api/student-guidance", tags=["Student Guidance"]
+109
+)
+110
+app.include_router(workshop.router, prefix="/api/workshops", tags=["Workshops & FDP"])
+111
+app.include_router(upload.router, prefix="/api/upload", tags=["File Uploads"])
+112
+app.include_router(search.router, prefix="/api/search", tags=["Search & Filter"])
+113
+app.include_router(analytics.router, prefix="/api/analytics", tags=["Data & Analytics"])
+114
+app.include_router(notifications.router, prefix="/api")
     prefix=f"{settings.API_V1_STR}/portfolio/public",
     tags=["Public Portfolio"],
 )
-
 
 app.include_router(patent.router, prefix="/api/patents", tags=["Patents"])
 app.include_router(
