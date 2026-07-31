@@ -33,7 +33,7 @@ import api from "@/lib/api"
 const registerSchema = z.object({
   email: z.string().email("Invalid email address").endsWith("@skit.ac.in", "Only @skit.ac.in emails are allowed"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  role: z.enum(["faculty", "hod", "admin"]).default("faculty"),
+  role: z.enum(["faculty", "hod", "admin"]),
 })
 
 type RegisterFormValues = z.infer<typeof registerSchema>

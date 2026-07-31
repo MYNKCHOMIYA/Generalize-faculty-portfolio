@@ -13,7 +13,7 @@ from app.api.education import router as education_router
 from app.api.experience import router as experience_router
 from app.api.project import router as project_router
 from app.api.achievement import router as achievement_router
-from app.api.export import router as export_router
+
 from app.api import (
     patent,
     certification,
@@ -27,8 +27,6 @@ from app.api import (
 from app.api import notifications
 from app.api import activity
 from app.api import public_portfolio
-from app.api import resume
-from app.api import cv_generator
 import cloudinary
 import cloudinary.uploader
 import os
@@ -88,9 +86,7 @@ app.include_router(
     prefix=f"{settings.API_V1_STR}/achievements",
     tags=["Achievements"],
 )
-app.include_router(
-    export_router, prefix=f"{settings.API_V1_STR}/export", tags=["Data Export"]
-)
+
 
 # Public portfolio — no auth required
 app.include_router(
@@ -98,17 +94,7 @@ app.include_router(
     prefix=f"{settings.API_V1_STR}/portfolio/public",
     tags=["Public Portfolio"],
 )
-app.include_router(
-    resume.router,
-    prefix=f"{settings.API_V1_STR}/resume",
-    tags=["AI Resume Generator"],
-)
 
-app.include_router(
-    cv_generator.router,
-    prefix=f"{settings.API_V1_STR}/generate-cv",
-    tags=["Dynamic CV Generator"],
-)
 
 app.include_router(patent.router, prefix="/api/patents", tags=["Patents"])
 app.include_router(

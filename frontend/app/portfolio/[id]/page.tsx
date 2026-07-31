@@ -6,14 +6,15 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   GraduationCap, Mail, MapPin, Globe,
   BookOpen,
-  Briefcase, Award, Lightbulb, Download, ExternalLink, Share2,
+  Briefcase, Award, Lightbulb, ExternalLink, Share2,
   Building2, Calendar, FlaskConical, ChevronDown, Moon, Sun
 } from "lucide-react"
 import { toast } from "sonner"
 import { Toaster } from "@/components/ui/sonner"
 import { useTheme } from "next-themes"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://gfpms-api.onrender.com"
 
 const LinkedinIcon = (p: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="currentColor" {...p}>
@@ -126,20 +127,6 @@ export default function PublicPortfolioPage() {
     toast.success("Portfolio link copied!")
   }
 
-  const handleDownloadCV = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/api/v1/export/cv/${id}`)
-      if (!res.ok) { toast.error("CV not available"); return }
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = `${data.first_name}_${data.last_name}_CV.pdf`
-      a.click()
-      URL.revokeObjectURL(url)
-    } catch { toast.error("Failed to download CV") }
-  }
-
   if (loading) return (
     <div className="flex min-h-screen items-center justify-center bg-background">
       <div className="flex flex-col items-center gap-4">
@@ -221,14 +208,7 @@ export default function PublicPortfolioPage() {
                 )}
               </div>
 
-              {/* Actions */}
               <div className="flex gap-2 shrink-0">
-                <button
-                  onClick={handleDownloadCV}
-                  className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95"
-                >
-                  <Download className="size-4" /> Download CV
-                </button>
               </div>
             </div>
 
