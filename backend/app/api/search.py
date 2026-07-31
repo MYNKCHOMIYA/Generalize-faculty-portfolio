@@ -6,8 +6,6 @@ from typing import List, Optional
 from app.api.deps import get_db, get_current_active_user
 from app.models.user import User
 from app.models.faculty_profile import FacultyProfile
-
-# Assuming these are the names of your MVP models!
 from app.models.publication import Publication
 
 router = APIRouter()
@@ -24,20 +22,40 @@ def search_faculty(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    # 1. Start with a base query
-    query = db.query(FacultyProfile)
+    """
+    Search faculty profiles with role-based visibility:
+    - admin: sees ALL faculty profiles
+    - hod: sees only faculty in their assigned department
+    - faculty: sees only their OWN profile
+    """
+    # ── Role-based base query ──────────────────────────────────────────────────
+    if current_user.role == "faculty":
+        # Faculty can only see themselves
+        query = db.query(FacultyProfile).filter(
+            FacultyProfile.user_id == current_user.id
+        )
+    elif current_user.role == "hod":
+        # HOD sees only faculty in their department (matched via department_id on User)
+        if not current_user.department_id:
+            return []  # HOD with no assigned dept sees nothing
+        query = (
+            db.query(FacultyProfile)
+            .join(User, FacultyProfile.user_id == User.id)
+            .filter(User.department_id == current_user.department_id)
+        )
+    else:
+        # Admin sees everyone
+        query = db.query(FacultyProfile)
 
-    # 2. Apply text-based filters dynamically
-    # (Adding type: ignore to keep VS Code's Pylance happy with SQLAlchemy dynamic filtering)
+    # ── Apply optional text filters ────────────────────────────────────────────
     if department:
         query = query.filter(FacultyProfile.department.ilike(f"%{department}%"))  # type: ignore
     if designation:
         query = query.filter(FacultyProfile.designation.ilike(f"%{designation}%"))  # type: ignore
-
     if skill:
         query = query.filter(FacultyProfile.skills.ilike(f"%{skill}%"))  # type: ignore
 
-    # 3. Apply advanced relational filters using your actual column name: faculty_id
+    # ── Apply publication count filter ─────────────────────────────────────────
     if min_publications is not None and min_publications > 0:
         query = (
             query.outerjoin(Publication, FacultyProfile.id == Publication.faculty_id)
@@ -45,10 +63,9 @@ def search_faculty(
             .having(func.count(Publication.id) >= min_publications)
         )  # type: ignore
 
-    # 4. Execute the final generated SQL query
     results = query.all()
 
-    # 5. Format the lightweight response
+    # ── Format response ────────────────────────────────────────────────────────
     formatted_results = []
     for profile in results:
         formatted_results.append(

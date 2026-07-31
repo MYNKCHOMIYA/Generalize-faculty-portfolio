@@ -13,8 +13,6 @@ class UserRole(str, Enum):
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
-    role: UserRole = UserRole.FACULTY  # Default safely to the Enum
-    department_id: Optional[str] = None
 
     # 2. Intercept and validate the email domain before it hits the database
     @field_validator("email")
@@ -31,8 +29,36 @@ class UserResponse(BaseModel):
     id: str
     email: EmailStr
     is_active: bool
-    role: UserRole  # Upgraded to match the Enum
+    role: UserRole
     department_id: Optional[str]
 
     # Required to read data from SQLAlchemy model instances
     model_config = ConfigDict(from_attributes=True)
+
+
+class UserAdminResponse(BaseModel):
+    """Extended user response for admin endpoints — includes department name."""
+
+    id: str
+    email: EmailStr
+    is_active: bool
+    role: UserRole
+    department_id: Optional[str]
+    department_name: Optional[str]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UserRoleUpdate(BaseModel):
+    """Schema for admin to update a user's role and department assignment."""
+
+    role: UserRole
+    department_id: Optional[str] = None
+
+    @field_validator("department_id")
+    @classmethod
+    def department_required_for_hod(cls, v, info):
+        role = info.data.get("role")
+        if role == UserRole.HOD and not v:
+            raise ValueError("department_id is required when assigning the HOD role")
+        return v

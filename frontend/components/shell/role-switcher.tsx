@@ -1,61 +1,31 @@
 "use client"
 
-import { Check, ChevronDown, ShieldCheck, UserRound, Users } from "lucide-react"
+import { ShieldCheck, UserRound, Users } from "lucide-react"
 import { useRole } from "@/components/role-provider"
 import { roleLabels } from "@/lib/nav"
 import type { Role } from "@/components/role-provider"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
-const roleMeta: Record<Role, { icon: typeof UserRound; hint: string }> = {
-  admin: { icon: ShieldCheck, hint: "Full institutional control" },
-  hod: { icon: Users, hint: "Department-scoped access" },
-  faculty: { icon: UserRound, hint: "Personal portfolio only" },
+const roleMeta: Record<Role, { icon: typeof UserRound; color: string }> = {
+  admin: { icon: ShieldCheck, color: "text-primary border-primary/30 bg-primary/5" },
+  hod: { icon: Users, color: "text-amber-600 border-amber-500/30 bg-amber-500/5 dark:text-amber-400" },
+  faculty: { icon: UserRound, color: "text-muted-foreground border-border/60 bg-muted/30" },
 }
 
 export function RoleSwitcher() {
-  const { role, setRole } = useRole()
-  const roles: Role[] = ["faculty", "hod", "admin"]
+  const { role, user } = useRole()
+
+  if (!role) return null
+
+  const { icon: Icon, color } = roleMeta[role]
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        className="inline-flex h-9 items-center gap-2 rounded-full border border-border/70 bg-secondary/60 px-3 text-xs font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-      >
-        <span className="size-1.5 rounded-full bg-success" />
-        <span className="hidden sm:inline">{role ? roleLabels[role] : "Select Role"}</span>
-        <ChevronDown className="size-3.5 opacity-60" />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-64 rounded-xl">
-        <p className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-          Preview as role (RBAC demo)
-        </p>
-        <DropdownMenuSeparator />
-        {roles.map((r) => {
-          const Icon = roleMeta[r].icon
-          return (
-            <DropdownMenuItem
-              key={r}
-              className="flex items-center gap-3 rounded-lg py-2"
-              onClick={() => setRole(r)}
-            >
-              <span className="flex size-8 items-center justify-center rounded-lg bg-accent text-accent-foreground">
-                <Icon className="size-4" />
-              </span>
-              <span className="flex flex-col">
-                <span className="text-sm font-medium">{roleLabels[r]}</span>
-                <span className="text-xs text-muted-foreground">{roleMeta[r].hint}</span>
-              </span>
-              {role === r && <Check className="ml-auto size-4 text-primary" />}
-            </DropdownMenuItem>
-          )
-        })}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div
+      className={`inline-flex h-9 items-center gap-2 rounded-full border px-3 text-xs font-medium ${color}`}
+      title={`Logged in as: ${user?.email}`}
+    >
+      <span className="size-1.5 rounded-full bg-emerald-500" />
+      <Icon className="size-3.5" />
+      <span>{roleLabels[role]}</span>
+    </div>
   )
 }
