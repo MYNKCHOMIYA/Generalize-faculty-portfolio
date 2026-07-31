@@ -27,6 +27,8 @@ from app.api import (
 from app.api import notifications
 from app.api import activity
 from app.api import public_portfolio
+from app.api import resume
+from app.api import cv_generator
 import cloudinary
 import cloudinary.uploader
 import os
@@ -50,7 +52,11 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "https://generalized-faculty-portfolio-syste-ten.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -91,6 +97,17 @@ app.include_router(
     public_portfolio.router,
     prefix=f"{settings.API_V1_STR}/portfolio/public",
     tags=["Public Portfolio"],
+)
+app.include_router(
+    resume.router,
+    prefix=f"{settings.API_V1_STR}/resume",
+    tags=["AI Resume Generator"],
+)
+
+app.include_router(
+    cv_generator.router,
+    prefix=f"{settings.API_V1_STR}/generate-cv",
+    tags=["Dynamic CV Generator"],
 )
 
 app.include_router(patent.router, prefix="/api/patents", tags=["Patents"])
