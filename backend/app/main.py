@@ -54,6 +54,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://localhost:5173",
         "https://generalized-faculty-portfolio-syste-ten.vercel.app",
+        "https://generalized-faculty-portfolio-syste.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
